@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>📊 Dashboard สถิติการแนะนำอาหาร</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #3e0cf1;
+            margin-bottom: 30px;
+        }
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            padding: 20px;
+            text-align: center;
+        }
+        .card h3 {
+            margin: 0;
+            color: #333;
+        }
+        .card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-top: 10px;
+            color: #04aa6a;
+        }
+        .chart-container {
+            width: 100%;
+            height: 300px;
+        }
+        .button-group {
+            text-align: center;
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .button-group button {
+            font-family: 'Kanit', sans-serif;
+            font-size: 1.1rem;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        .button-group button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .back-button { background-color: #2196f3; }
+        .back-button:hover { background-color: #0b7de3; }
+        .button-close { background-color: #888; }
+        .button-close:hover { background-color: #666; }
+
+        @media (max-width: 600px) {
+            .card .value { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>📊 Dashboard สถิติการแนะนำอาหาร</h1>
+
+    <div class="dashboard">
+        <div class="card">
+            <h3><i class="fas fa-database"></i> จำนวนประวัติทั้งหมด</h3>
+            <div class="value" id="totalCount">0</div>
+        </div>
+        <div class="card">
+            <h3><i class="fas fa-crown"></i> เมนูยอดนิยม</h3>
+            <div class="value" id="topMenu">–</div>
+        </div>
+        <div class="card">
+            <h3><i class="fas fa-weight"></i> BMI เฉลี่ย</h3>
+            <div class="value" id="avgBmi">0.00</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3><i class="fas fa-chart-bar"></i> กราฟเมนูที่ถูกสุ่ม</h3>
+        <div class="chart-container"><canvas id="menuChart"></canvas></div>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+        <h3><i class="fas fa-chart-pie"></i> การแจกแจง BMI</h3>
+        <div class="chart-container"><canvas id="bmiRangeChart"></canvas></div>
+    </div>
+
+    <div class="button-group">
+        <button class="back-button" onclick="goBackToMain()"><i class="fas fa-arrow-left"></i> กลับหน้าหลัก</button>
+        <button class="button-close" onclick="window.close()"><i class="fas fa-times"></i> ปิดหน้าต่างนี้</button>
+    </div>
+
+    <script>
+        function categorizeBmi(b) {
+            if (b < 18.5) return 'ผอม';
+            else if (b < 25) return 'ปกติ';
+            else return 'อ้วน';
+        }
+
+        function loadDashboard() {
+            const history = JSON.parse(localStorage.getItem("menuHistory")) || [];
+            const total = history.length;
+            document.getElementById("totalCount").innerText = total;
+
+            if (total === 0) {
+                document.getElementById("topMenu").innerText = "-";
+                document.getElementById("avgBmi").innerText = "0.00";
+                return;
+            }
+
+            // ===== เมนูยอดนิยม =====
+            const menuCount = {};
+            history.forEach(item => {
+                const m = item.menu || '';
+                menuCount[m] = (menuCount[m] || 0) + 1;
+            });
+            const sortedMenus = Object.entries(menuCount).sort((a, b) => b[1] - a[1]);
+            document.getElementById("topMenu").innerText = sortedMenus[0][0];
+
+            const menuLabels = sortedMenus.map(e => e[0]);
+            const menuData = sortedMenus.map(e => e[1]);
+
+            // ===== ค่า BMI =====
+            const bmiValues = history.map(h => parseFloat(h.bmi) || 0);
+            const avg = bmiValues.reduce((a, b) => a + b, 0) / bmiValues.length;
+            document.getElementById("avgBmi").innerText = avg.toFixed(2);
+
+            const rangeCount = { 'ผอม': 0, 'ปกติ': 0, 'อ้วน': 0 };
+            bmiValues.forEach(b => { rangeCount[categorizeBmi(b)]++; });
+
+            // ===== วาดกราฟ =====
+            new Chart(document.getElementById('menuChart'), {
+                type: 'bar',
+                data: {
+                    labels: menuLabels,
+                    datasets: [{ label: 'จำนวนครั้ง', data: menuData, backgroundColor: 'rgba(54, 162, 235, 0.7)' }]
+                },
+                options: { responsive: true, plugins: { legend: { display: false } } }
+            });
+
+            new Chart(document.getElementById('bmiRangeChart'), {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(rangeCount),
+                    datasets: [{ data: Object.values(rangeCount), backgroundColor: ['#FF6384','#36A2EB','#FFCE56'] }]
+                },
+                options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+
+        function goBackToMain() {
+            if (window.opener && !window.opener.closed) {
+                window.opener.focus();
+                window.close();
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", loadDashboard);
+    </script>
+</body>
+</html>
