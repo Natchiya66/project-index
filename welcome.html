@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>อาหารที่แนะนำเพื่อสุขภาพ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3e0cf1;
+            --secondary-color: hsl(249, 84%, 40%);
+            --button-primary: #04aa6a;
+            --button-hover: #028a55;
+            --button-secondary: #2196f3;
+            --button-secondary-hover: #0b7de3;
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --shadow: 0 4px 12px rgba(0,0,0,0.2);
+            --border-radius: 15px;
+        }
+        
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #f8f8f8; 
+            background-image: url('image/bg.png');
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            /* Ensure full viewport height */
+            min-height: 100vh; 
+        }
+
+        .container {
+            /* Max width for larger screens */
+            max-width: 650px; 
+            /* Adjust margins for mobile to reduce empty space at the top/bottom */
+            margin: 20px auto; 
+            background: var(--bg-card);
+            /* Padding adjustment for mobile screens */
+            padding: 20px; 
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
+            /* Use 90% width on mobile, max 650px on desktop */
+            width: 90%; 
+            box-sizing: border-box; /* Include padding in the element's total width and height */
+        }
+
+        /* Smaller font sizes for mobile to fit more content */
+        h1 {
+            color: var(--primary-color);
+            font-size: 32px; /* Reduced from 52px */
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        h2 {
+            color: var(--secondary-color);
+            font-size: 24px; /* Reduced from 38px */
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        label {
+            font-size: 18px; /* Reduced from 24px */
+            color: #555;
+            display: block;
+            margin: 10px 0 5px;
+            text-align: left;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px; /* Reduced from 12px */
+            font-size: 16px; /* Reduced from 18px */
+            margin-bottom: 15px;
+            border-radius: 8px; /* Slightly smaller radius */
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        /* Button group layout for mobile: Stack buttons on very small screens */
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap; 
+            margin-top: 20px;
+        }
+        .btn-group button {
+            width: 48%; /* Keep 2-column layout */
+            margin-bottom: 10px;
+            padding: 12px; /* Adjusted padding */
+        }
+        /* เพิ่มกฎนี้ในสไตล์ของคุณเพื่อเน้นข้อความ */
+.note-disease {
+    /* ใช้สีที่กำหนดไว้เพื่อให้ข้อความโดดเด่น */
+    color: #CC0000; /* นี่คือสีชมพู/แดงที่คุณตั้งไว้ */
+    font-size: 16px; 
+    font-style: italic; 
+    font-weight: 600; 
+    margin: 5px 0 15px; 
+}
+        button {
+            font-size: 18px; /* Reduced from 24px */
+            padding: 12px 20px; /* Reduced padding */
+            border: none;
+            border-radius: 10px; /* Slightly smaller radius */
+            background-color: var(--button-primary);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+        
+        /* Ensure the result image scales correctly on mobile */
+        #resultContainer img {
+    max-width: 100%;
+    max-height: 250px; /* <--- แก้ไขค่านี้ให้เล็กลง */
+    height: auto;      
+    object-fit: contain; 
+    border: 4px solid #f0f0f0; 
+    border-radius: 15px; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    margin-top: 20px;
+    display: block; 
+    margin-left: auto;
+    margin-right: auto;
+}
+        .note {
+            font-size: 14px; /* Reduced font size */
+        }
+        
+        .inline-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px; /* Added gap for spacing */
+        }
+        .inline-buttons button {
+            width: 50%; /* Make them equal width */
+            margin-top: 15px;
+        }
+        
+        /* Media query for very small screens (e.g., smaller iPhones) to stack buttons */
+        @media (max-width: 400px) {
+            .btn-group button {
+                width: 100%; /* Stack category buttons */
+            }
+            .inline-buttons {
+                flex-direction: column; /* Stack result buttons */
+                gap: 5px;
+            }
+            .inline-buttons button {
+                 width: 100%;
+            }
+        }
+
+        /* Keep existing animations and hover effects */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .submit-btn:hover {
+            background-color: var(--button-hover);
+        }
+        .category-btn {
+            background-color: var(--button-secondary);
+            font-size: 16px; 
+        }
+        .category-btn:hover {
+            background-color: var(--button-secondary-hover);
+        }
+        .category-btn.active {
+            background-color: var(--button-secondary-hover);
+            border: 2px solid white;
+            transform: scale(1.05);
+        }
+        #randomButton {
+            background-color: var(--secondary-color);
+        }
+        #randomButton:hover {
+            background-color: #c02d6b;
+        }
+        #resultContainer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+            animation: fadeIn 1s ease-in-out;
+        }
+        /* ------------------------------------------- */
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>ข้อมูลสุขภาพ</h1>
+        <form id="myForm" onsubmit="event.preventDefault(); sendData();">
+            <label for="height">ส่วนสูง (ซม.):</label>
+            <input type="number" id="height" required>
+
+            <label for="weight">น้ำหนัก (กก.):</label>
+            <input type="number" id="weight" required>
+
+           
+
+            <h2>ภาวะสุขภาพพิเศษ</h2>
+            <p class="note-disease">
+               <strong>ใส่ข้อด้านสุขภาพเบื้องต้นเพื่อสุ่มอาหารที่เหมาะสมกับตัวคุณ</strong>
+            </p>
+            
+            <label for="diabetes">เบาหวาน:</label>
+            <select id="diabetes" required>
+                <option value="">-- โปรดเลือก --</option>
+                <option value="yes">มี</option>
+                <option value="no">ไม่มี</option>
+            </select>
+            
+            <label for="hypertension">ความดันโลหิตสูง:</label>
+            <select id="hypertension" required>
+                <option value="">-- โปรดเลือก --</option>
+                <option value="yes">มี</option>
+                <option value="no">ไม่มี</option>
+            </select>
+            
+            <button class="submit-btn" type="submit">คำนวณสุขภาพเบื้องต้นและสุ่มอาหารที่เหมาะสม</button>
+        </form>
+        
+
+        <h2>เลือกหมวดหมู่ประเภทอาหาร</h2>
+        <div class="btn-group">
+            <button class="category-btn" onclick="selectCategory('เส้น')">เส้น</button>
+            <button class="category-btn" onclick="selectCategory('จานเดียว')">จานเดียว</button>
+            <button class="category-btn" onclick="selectCategory('แกง')">แกง</button>
+            <button class="category-btn" onclick="selectCategory('ทอด')">ทอด</button>
+        </div>
+        <button id="randomButton" onclick="sendData(selectedCategory)" style="display: none;">สุ่มเมนู</button>
+
+        <div id="resultContainer"></div>
+    </div>
+    
+    
+
+    <script>
+        let selectedCategory = null;
+
+        const diabetesMenuOptions = [
+            { name: "ข้าวโจ๊กหมู", image: "image/riceA.png" },
+            { name: "ข้าวต้มปลา", image: "image/riceB.png" },
+            { name: "ข้าวต้มกุ้ง", image: "image/riceC.png" },
+            { name: "ลาบเห็ด", image: "image/riceD.png" },
+            { name: "อกไก่ย่าง", image: "image/grilled_chicken.png" },
+            { name: "ต้มยำปลา", image: "image/tom_yum_fish.png" },
+            { name: "สลัดผัก", image: "image/vegetable_salad.png" }
+        ];
+
+        const hypertensionMenuOptions = [
+            { name: "แกงจืดเต้าหู้", image: "image/tofu_soup.png" },
+            { name: "เต้าหู้ทรงเครื่อง", image: "image/tofu_soup0.png" },
+            { name: "สลัดโรลกุ้ง", image: "image/tofu_soup1.png" },
+            { name: "ปลานึ่งมะนาว", image: "image/steamed_fish.png" },
+            { name: "ผักต้ม", image: "image/boiled_vegetables.png" },
+            { name: "สลัดผลไม้", image: "image/fruit_salad.png" }
+        ];
+
+       // ... โค้ดส่วนบน (diabetesMenuOptions, hypertensionMenuOptions) ...
+
+        const menuOptionsByBMI = {
+            "อ้วนมาก": {
+                "เส้น": [
+                    { name: "ก๋วยเตี๋ยวหมู/เนื้อ ตุ๋น (ไม่มัน)", image: "image/ObeseJ.png" },
+                    { name: "ก๋วยเตี๋ยวต้มยำ (ไม่ใส่ถั่ว/น้ำตาล)", image: "image/thinE.png" },
+                    { name: "เกาเหลานํ้าใส (เนื้อไก่/ปลา)", image: "image/a1.png" },
+                    { name: "ยำเส้นแก้ว (อกไก่/ทะเล)", image: "image/a2.png" },
+                    { name: "ต้มยำกุ้งนํ้าใส", image: "image/a3.png" },
+
+                ],
+                "จานเดียว": [
+                    { name: "ลาบหมู (ใส่ข้าวคั่วพอประมาณ)", image: "image/Obesea.png" },
+                    { name: "กะเพราปลาหมึก (ไม่ใช้น้ำมันมาก)", image: "image/Obeseb.png" },
+                    { name: "ส้มตำไทย (ไม่ใส่ถั่วลิสง/น้ำตาล)", image: "image/ObeseI.png" },
+                    { name: "สุกี้นํ้า (เนื้อไก่/ทะเล)", image: "image/b1.png" },
+                    { name: "ยำวุ้นเส้น (ไม่ใส่ถั่วทอด/หมูสับติดมัน)", image: "image/b2.png" }
+                ],
+                "แกง": [
+                    { name: "ต้มแซ่บกระดูกอ่อน (เลือกเนื้อล้วน)", image: "image/ObeseC.png" },
+                    { name: "แกงจืดเต้าหู้หมูสับ (ลดหมูสับ)", image: "image/ObeseF.png" },
+                    { name: "แกงส้มผักรวมปลา", image: "image/c1.png" },
+                    { name: "ต้มยำกุ้งน้ำใส", image: "image/c2.png" },
+                    { name: "แกงจืดเต้าหู้ (ไม่ใส่หมูสับ/ใส่หมูสับน้อย)", image: "image/c3.png" },
+
+                ],
+                "ทอด": [
+                    { name: "ไก่ย่าง (ส่วนอก)", image: "image/ObeseH.png" },
+                    { name: "อกไก่ทอด (ไร้นํ้ามัน)", image: "image/d1.png" },
+                    { name: "ไข่เจียว (ไร้นํ้ามัน)", image: "image/d2.png" },
+                    { name: "ทอดมันอกไก่ (แทนทอดมันปลา/หมู)", image: "image/d3.png" },
+                    { name: "เกี๊ยวกรอบ(ลดปริมาณแป้ง)", image: "image/d4.png" },
+                    
+                ]
+            },
+            "อ้วน": {
+                "เส้น": [
+                    { name: "ก๋วยเตี๋ยวลุยสวน", image: "image/tC.png" },
+                    { name: "ส้มตำ", image: "image/e0.png" },
+                     { name: "ยำวุ้นเส้น (ไม่ใส่นํ้าตาล)", image: "image/e1.png" },
+                      { name: "ชาบู", image: "image/e2.png" },
+                       { name: "ขนมจีนนํ้ายา (ลดหวาน เพิ่มผัก)", image: "image/e3.png" },
+
+                ],
+                "จานเดียว": [
+                    { name: "ซาชิมิ/ข้าวหน้าปลาดิบ", image: "image/tA.png" },
+                    { name: "ลาบไก่ (ไม่ติดหนัง)", image: "image/tB.png" },
+                    { name: "ลาบอกไก่ทอด", image: "image/f1.png" },
+                     { name: "ข้าวมันไก่ (เนื้ออก ไม่เอาหนัง)", image: "image/f2.png" },
+                     { name: "ปลากระพง ทอดเกลือ (ไร้แป้ง)", image: "image/f3.png" },
+                ],
+                
+                "แกง": [
+                    { name: "แกงส้มปลา (ลดน้ำตาล)", image: "image/tG.png" },
+                    { name: "แกงจืดหมูสับสาหร่าย", image: "image/tH.png" },
+                    { name: "แกงเลียงกุ้ง", image: "image/g1.png" }, 
+                    { name: "ต้มจืดวุ้นเส้น", image: "image/g2.png" },
+                    { name: "ต้มยำ", image: "image/g3.png" },
+                ],
+                "ทอด": [
+                    { name: "อกไก่ทอดกระเทียม", image: "image/h1.png" },
+                    { name: "ไข่เจียวนํ้า", image: "image/h2.png" },
+                    { name: "ทอดมันอกไก่", image: "image/h3.png" },
+                    { name: "ปลาทอดกระเทียม", image: "image/h4.png" },
+                    { name: "เต้าหู้ทอด", image: "image/h5.png" },
+                ]
+            },
+            "มาตรฐาน": {
+                "เส้น": [
+                    { name: "สปาเก็ตตี้ผัดขี้เมา", image: "image/pl.png" },
+                    { name: "ก๋วยเตี๋ยวต้มยำ", image: "image/thinE.png" },
+                    { name: "ผัดไทยเส้นแก้ว", image: "image/i1.png" },
+                    { name: "ยำเส้นแก้ว", image: "image/i2.png" },
+                    { name: "ยำบะหมี่ผักอกไก่สับ", image: "image/i3.png" },
+                ],
+                "จานเดียว": [
+                    { name: "กะเพราไก่ + ไข่ดาว", image: "image/thinA.png" },
+                    { name: "ข้าวผัดกุ้งใส่ไข่", image: "image/thinB.png" },
+                    { name: "ข้าวผัดผักรวม", image: "image/thinC.png" },
+                     { name: "สุกี้แห้งอกไก่", image: "image/l1.png" },
+                      { name: "ลาบแซลมอน", image: "image/l2.png" },
+                ],
+                "แกง": [
+                    { name: "แกงเขียวหวาน (ใส่ไก่/ลูกชิ้นปลา)", image: "image/thinG.png" },
+                    { name: "แกงเผ็ดเป็ดย่าง", image: "image/k1.png" }, 
+                    { name: "พะแนงหมู", image: "image/k2.png" }, 
+                    { name: "แกงส้มกุ้งผักรวม", image: "image/k3.png" },
+                    { name: "ต้มอกไก่นํ้าใส", image: "image/k4.png" },
+                    
+                ],
+                "ทอด": [
+                    { name: "ส้มตำไทย/ไก่ย่าง", image: "image/thinF.png" },
+                    { name: "ปลาทอด/ผักสด", image: "image/tJ.png" },
+                    { name: "ปลาทูทอดราดพริก", image: "image/m1.png" },
+                    { name: "ไข่เจียว (กุ้งสับ/ผักสับ)", image: "image/m2.png" },
+                    { name: "ทอดมันปลากราย", image: "image/m3.png" },
+                ]
+            },
+            "ผอม": {
+                "เส้น": [
+                    { name: "ผัดไทยไข่ (เพิ่มกุ้ง/เต้าหู้)", image: "image/pC.png" },
+                    { name: "ข้าวต้มหมูสับ/กุ้งใส่ขิง", image: "image/pD.png" },
+                    { name: "ผัดซีอิ๊วเส้นไข่ขาว", image: "image/n1.png" },
+                    { name: "ก๋วยเตี๋ยวหลอดไส้หมู", image: "image/n2.png" },
+                    { name: "บะหมี่ผักต้มยำแห้งทะเล", image: "image/n3.png" },
+                ],
+                "จานเดียว": [
+                    { name: "ข้าวคลุกกะปิ + หมูหวาน", image: "image/thA.png" },
+                    { name: "ข้าวหมูกระเทียมราดไข่ดาว", image: "image/pB.png" },
+                    { name: "ข้าวผัดผักรวมใส่กุ้ง", image: "image/pE.png" },
+                    { name: "ข้าวคลุกปลา/ไก่", image: "image/n4.png" },
+                    { name: "ข้าวต้มปลากะพง", image: "image/n5.png" },
+                ],
+                "แกง": [
+                    { name: "แกงกระหรี่ไก่/เนื้อ", image: "image/w1.png" }, 
+                    { name: "มัสมั่นไก่/เนื้อ", image: "image/w2.png" }, 
+                    { name: "แกงเลียงกุ้งสด", image: "image/w3.png" },
+                    { name: "ต้มยำกุ้งนํ้าใส", image: "image/w4.png" },
+                    { name: "แกงเขียวหวานอกไก่", image: "image/w5.png" },
+                ],
+                "ทอด": [
+                    { name: "สเต็กหมูพริกไทยดำ", image: "image/pG.png" },
+                    { name: "ข้าวหน้าไก่ทอด", image: "image/pH.png" },
+                    { name: "ข้าวหมูกรอบ", image: "image/pA.png" },
+                    { name: "นักเก็ตอกไก่/ปลา", image: "image/pa1.png" },
+                    { name: "ไก่ย่างหนังกรอบ", image: "image/pa2.png" },
+                ]
+            },
+            "ต่ำกว่าเกณฑ์": {
+                "เส้น": [
+                    { name: "ข้าวยำปักษ์ใต้", image: "image/swF.png" },
+                    { name: "ผัดไทยกุ้งสด", image: "image/ph1.png" },
+                    { name: "ก๋วยเตี๋ยวเนื้อนํ้าตก", image: "image/ph2.png" },
+                    { name: "ขนมจีนนํ้ายาป่า/ไก่", image: "image/ph3.png" },
+                    { name: "ก๋วยเตี๋ยวคั่วไก่/หมู", image: "image/ph4.png" },
+                ],
+                "จานเดียว": [
+                    { name: "ข้าวผัดกระเพราหมู/ไข่ดาว (เน้นข้าว)", image: "image/swA.png" },
+                    { name: "ข้าวผัดหมูใส่กุ้ง (เน้นข้าว)", image: "image/swB.png" },
+                    { name: "ข้าวผัดผักรวมมิตร", image: "image/swC.png" },
+                    { name: "ส้มตำ/ไก่ย่าง", image: "image/swD.png" },
+                    { name: "ลาบหมู/ไก่", image: "image/swE.png" },
+                    { name: "ผัดเผ็ดปลาดุก", image: "image/swH.png" }
+                ],
+                "แกง": [
+                    { name: "ต้มขาหมู (เพิ่มพลังงาน)", image: "image/v1.png" }, 
+                    { name: "แกงไตปลา (ทานคู่ข้าวสวย)", image: "image/v2.png" }, 
+                    { name: "แกงเผ็ดหมู/ไก่", image: "image/v3.png" },
+                    { name: "พะแนงหมู/เนื้อ", image: "image/v4.png" },
+                    { name: "แกงกะทิหน่อไม้(ใส่หมูสามชั้น)", image: "image/v5.png" },
+                ],
+                "ทอด": [
+                    { name: "ข้าวไข่เจียวหมูสับ", image: "image/x1.png" },
+                    { name: "หมู/ไก่ ทอดกระเทียมพริกไทย", image: "image/x2.png" },
+                    { name: "ปลาทูทอดราดนํ้าปลา", image: "image/x3.png" },
+                    { name: "ไก่ชุบแป้งทอด", image: "image/x4.png" },
+                    { name: "หมูยอทอด", image: "image/x5.png" },
+                ]
+            }
+        };
+// ... โค้ดส่วนล่าง ...
+        
+        function getCombinedMenuOptions() {
+            const userCustomMenus = JSON.parse(localStorage.getItem('userCustomMenus')) || {};
+            const combinedOptions = JSON.parse(JSON.stringify(menuOptionsByBMI));
+
+            for (const bmiStatus in userCustomMenus) {
+                if (combinedOptions[bmiStatus]) {
+                    for (const category in userCustomMenus[bmiStatus]) {
+                        if (!combinedOptions[bmiStatus][category]) {
+                            combinedOptions[bmiStatus][category] = [];
+                        }
+                        combinedOptions[bmiStatus][category] = combinedOptions[bmiStatus][category].concat(userCustomMenus[bmiStatus][category]);
+                    }
+                }
+            }
+            return combinedOptions;
+        }
+
+        function loadSavedData() {
+            // ลบโค้ดส่วนนี้ออกเพื่อไม่ให้ดึงค่าที่เคยบันทึกไว้มาแสดง
+            // const savedHeight = localStorage.getItem("userHeight");
+            // const savedWeight = localStorage.getItem("userWeight");
+            // if (savedHeight) document.getElementById("height").value = savedHeight;
+            // if (savedWeight) document.getElementById("weight").value = savedWeight;
+        }
+
+        function getBMIStatus(bmi) {
+            if (bmi >= 30.0) return { status: "อ้วนมาก", color: "red" };
+            if (bmi >= 25.0) return { status: "อ้วน", color: "orange" };
+            if (bmi >= 19.0) return { status: "มาตรฐาน", color: "green" };
+            if (bmi >= 18.6) return { status: "ผอม", color: "blue" };
+            return { status: "ต่ำกว่าเกณฑ์", color: "pink" };
+        }
+
+        function getRecommendedMenu(status, diabetes, hypertension, category = null) {
+            let avoidFood = "";
+            let combinedMenu = [];
+            
+            const allMenuOptions = getCombinedMenuOptions();
+
+            if (diabetes === "yes" || hypertension === "yes") {
+                if (diabetes === "yes") {
+                    avoidFood += "⚠️ ผู้ป่วยเบาหวานควรเลี่ยง: น้ำตาล ของหวาน น้ำอัดลม ขนมหวาน<br>";
+                    combinedMenu = combinedMenu.concat(diabetesMenuOptions);
+                }
+                if (hypertension === "yes") {
+                    avoidFood += "⚠️ ผู้ป่วยความดันควรเลี่ยง: อาหารเค็มจัด ของหมักดอง อาหารแปรรูป<br>";
+                    combinedMenu = combinedMenu.concat(hypertensionMenuOptions);
+                }
+                if (combinedMenu.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * combinedMenu.length);
+                    return {
+                        menu: "✅ เมนูที่แนะนำสำหรับวันนี้: " + combinedMenu[randomIndex].name,
+                        image: combinedMenu[randomIndex].image,
+                        avoid: avoidFood,
+                        isDisease: true
+                    };
+                }
+            }
+            
+            let menuList = [];
+            if (category && allMenuOptions[status] && allMenuOptions[status][category]) {
+                menuList = allMenuOptions[status][category];
+            } else if (allMenuOptions[status]) {
+                const allCategories = Object.values(allMenuOptions[status]).flat();
+                menuList = allCategories;
+            }
+
+            if (menuList.length === 0) {
+                return {
+                    menu: "ไม่พบเมนูสำหรับหมวดหมู่นี้",
+                    image: "ไม่มีรูปภาพ",
+                    avoid: "",
+                    isDisease: false
+                };
+            }
+
+            const randomIndex = Math.floor(Math.random() * menuList.length);
+            const selectedMenu = menuList[randomIndex];
+
+            return {
+                menu: "🍛 เมนูแนะนำวันนี้: " + selectedMenu.name,
+                image: selectedMenu.image,
+                avoid: "",
+                isDisease: false
+            };
+        }
+
+        function sendData(category = null) {
+            const height = parseFloat(document.getElementById("height").value);
+            const weight = parseFloat(document.getElementById("weight").value);
+            const diabetes = document.getElementById("diabetes").value;
+            const hypertension = document.getElementById("hypertension").value;
+
+            localStorage.setItem("userHeight", height);
+            localStorage.setItem("userWeight", weight);
+
+            if (height <= 0 || weight <= 0 || isNaN(height) || isNaN(weight)) {
+                alert("กรุณาใส่ข้อมูลส่วนสูงและน้ำหนักที่ถูกต้อง");
+                return;
+            }
+
+            const heightM = height / 100;
+            const BMI = weight / (heightM * heightM);
+            const { status, color } = getBMIStatus(BMI);
+
+            const recommended = getRecommendedMenu(status, diabetes, hypertension, category);
+
+            const record = {
+                date: new Date().toLocaleString("th-TH"),
+                bmi: BMI.toFixed(2),
+                status: status,
+                menu: recommended.menu.replace("✅ เมนูที่แนะนำสำหรับวันนี้: ", "").replace("🍛 เมนูแนะนำวันนี้: ", ""),
+                image: recommended.image
+            };
+            let history = JSON.parse(localStorage.getItem("menuHistory")) || [];
+            history.unshift(record);
+            localStorage.setItem("menuHistory", JSON.stringify(history));
+
+            displayResult(BMI, status, color, recommended);
+        }
+        
+        function selectCategory(category) {
+            selectedCategory = category;
+            const buttons = document.querySelectorAll('.category-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.category-btn[onclick="selectCategory('${category}')"]`).classList.add('active');
+            document.getElementById("randomButton").textContent = `สุ่มเมนูหมวด "${category}"`;
+            document.getElementById("randomButton").style.display = "block";
+        }
+
+       function displayResult(bmi, status, color, recommended) {
+    const resultDiv = document.getElementById("resultContainer");
+    resultDiv.innerHTML = `
+        <h1>ดัชนีมวลกาย (BMI): ${bmi.toFixed(2)}</h1>
+        <h2 style='color:${color};'>สถานะน้ำหนัก: ${status}</h2>
+        ${recommended.avoid ? `<p style='text-align: left;'>${recommended.avoid}</p>` : ''}
+        <h2>${recommended.menu}</h2>
+        <div>
+            <img src='${recommended.image}' alt='เมนูอาหาร'>
+        </div>
+        <p class='note'>⚠️ หมายเหตุ: คำแนะนำนี้เป็นข้อมูลเบื้องต้น ไม่สามารถแทนคำแนะนำทางการแพทย์ได้ หากมีโรคประจำตัวควรปรึกษาแพทย์หรือนักโภชนาการ</p>
+        <div class="inline-buttons">
+            <button onclick="window.open('history.html', '_blank', 'width=700,height=600,scrollbars=yes')" style="background-color:#04aa6a;">ดูประวัติ</button>
+            <button onclick="window.location.href='index.html'" style="background-color:#2196f3;">กลับ</button>
+        </div>
+    `;
+}
+
+
+        window.onload = loadSavedData;
+    </script>
+</body>
+</html>
